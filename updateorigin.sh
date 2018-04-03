@@ -16,9 +16,9 @@ sleep 1
 
 echo "Enter Origin installation directory"
 
-read path
+read -e path
 
-unzip -o ./update/*.zip -d $path
+unzip -o ./update/*.zip -d "$path"
 
 echo "Cleaning up..."
 

@@ -2,41 +2,47 @@
 
 PATH32="drive_c/Program Files/Origin"
 PATH64="drive_c/Program Files (x86)/Origin"
+UPDATEPATH=""
 
 if [[ ! -z "$WINEPREFIX" ]];
 then
-    if [[ -e "$WINEPREFIX/$PATH32" ]];
-    then
-        echo "Downloading latest Origin setup file"
-        wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
-        echo "Extracting to .zip file"
-        unzip OriginSetup.exe 'update/*.zip'
-        unzip -o ./update/*.zip -d "$WINEPREFIX/$PATH32"
-        echo "Cleaning up..."
-        rm -r ./update
-        rm OriginSetup.exe
-        echo "Done!"
-        exit 0
-    fi
-    if [[ -e "$WINEPREFIX/$PATH64" ]];
-    then
-        echo "Downloading latest Origin setup file"
-        wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
-        echo "Extracting to .zip file"
-        unzip OriginSetup.exe 'update/*.zip'
-        unzip -o ./update/*.zip -d "$WINEPREFIX/$PATH64"
-        echo "Cleaning up..."
-        rm -r ./update
-        rm OriginSetup.exe
-        echo "Done!"
-        exit 0
-    fi
-    if [[ ! -e "$WINEPREFIX/$PATH32" ]] || [[ ! -e "$WINEPREFIX/$PATH64" ]];
+
+    # exit if no Origin folder can be found in the WINEPREFIX
+    if [[ ! -e "$WINEPREFIX/$PATH32" ]] && [[ ! -e "$WINEPREFIX/$PATH64" ]];
     then
         echo "Origin not found in WINEPREFIX!"
         echo "Please run this script again with the correct WINEPREFIX"
         echo "or cd to your Origin directory and run the script there."
+        exit 1
     fi
+
+    # check which installation of Origin is present. If both are (dunno why), then 64bit is being used
+    if [[ -e "$WINEPREFIX/$PATH32" ]];
+    then
+        UPDATEPATH=$PATH32
+        echo "Found a 32bit installation of Origin, going to use this:"
+    fi
+    if [[ -e "$WINEPREFIX/$PATH64" ]];
+    then
+        UPDATEPATH=$PATH64
+        echo "Found a 64bit installation of Origin, going to use this:"
+    fi
+
+    # ouput the folder, so that the user has confirmation
+    echo "=> $WINEPREFIX/$UPDATEPATH"
+
+    # now we do our magic!
+    echo "Downloading latest Origin setup file:"
+    wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
+    echo "Extracting the installation file:"
+    unzip OriginSetup.exe 'update/*.zip'
+    unzip -o ./update/*.zip -d "$WINEPREFIX/$UPDATEPATH"
+    echo "Cleaning up..."
+    rm -r ./update
+    rm OriginSetup.exe
+    echo "Done!"
+    exit 0
+
 fi
 if [[ -z $WINEPREFIX ]]
 then
@@ -61,7 +67,7 @@ then
         echo "Please enter your Origin installation path:"
         read -e path
         if [[ -w "$path/Origin.exe" ]];
-        then      
+        then
             echo "Downloading latest Origin setup file"
             wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
             echo "Extracting to .zip file"

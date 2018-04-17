@@ -36,7 +36,7 @@ then
     wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
     echo "Extracting the installation file:"
     unzip OriginSetup.exe 'update/*.zip'
-    unzip -o ./update/*.zip -d "$WINEPREFIX/$PATH32"
+    unzip -o ./update/*.zip -d "$WINEPREFIX/$UPDATEPATH"
     echo "Cleaning up..."
     rm -r ./update
     rm OriginSetup.exe

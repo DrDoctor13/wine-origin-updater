@@ -15,7 +15,6 @@ update() {
     rm -r ./update
     rm OriginSetup.exe
     echo "Done!"
-	echo "Downloading latest Origin setup file"
 }
 
 if [[ ! -z "$WINEPREFIX" ]];

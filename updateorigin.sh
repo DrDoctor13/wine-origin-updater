@@ -4,6 +4,19 @@ PATH32="drive_c/Program Files/Origin"
 PATH64="drive_c/Program Files (x86)/Origin"
 UPDATEPATH=""
 
+update() {
+    local DIR="$1"
+    echo "Downloading latest Origin setup file:"
+    wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
+    echo "Extracting the installation file:"
+    unzip OriginSetup.exe 'update/*.zip'
+    unzip -o ./update/*.zip -d "$DIR"
+    echo "Cleaning up..."
+    rm -r ./update
+    rm OriginSetup.exe
+    echo "Done!"
+}
+
 if [[ ! -z "$WINEPREFIX" ]];
 then
 
@@ -32,15 +45,7 @@ then
     echo "=> $WINEPREFIX/$UPDATEPATH"
 
     # now we do our magic!
-    echo "Downloading latest Origin setup file:"
-    wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
-    echo "Extracting the installation file:"
-    unzip OriginSetup.exe 'update/*.zip'
-    unzip -o ./update/*.zip -d "$WINEPREFIX/$UPDATEPATH"
-    echo "Cleaning up..."
-    rm -r ./update
-    rm OriginSetup.exe
-    echo "Done!"
+    update "$WINEPREFIX/$UPDATEPATH"
     exit 0
 
 fi
@@ -49,16 +54,7 @@ then
     echo "WINEPREFIX not passed, checking working directory..."
     if [[ -w "$PWD/Origin.exe" ]];
     then
-        echo "Origin.exe found!"
-        echo "Downloading latest Origin setup file"
-        wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
-        echo "Extracting to .zip file"
-        unzip OriginSetup.exe 'update/*.zip'
-        unzip -o ./update/*.zip -d "$PWD"
-        echo "Cleaning up..."
-        rm -r ./update
-        rm OriginSetup.exe
-        echo "Done!"
+        update "$PWD"
         exit 0
     fi
     if [[ ! -w "$PWD/Origin.exe" ]];
@@ -68,15 +64,7 @@ then
         read -e path
         if [[ -w "$path/Origin.exe" ]];
         then
-            echo "Downloading latest Origin setup file"
-            wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
-            echo "Extracting to .zip file"
-            unzip OriginSetup.exe 'update/*.zip'
-            unzip -o ./update/*.zip -d "$path"
-            echo "Cleaning up..."
-            rm -r ./update
-            rm OriginSetup.exe
-            echo "Done!"
+            update "$path"
         fi
         if [[ ! -w "$path/Origin.exe" ]];
         then

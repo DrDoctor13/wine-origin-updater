@@ -6,15 +6,22 @@ UPDATEPATH=""
 
 update() {
     local DIR="$1"
+    if which aria2c; then
+        command="aria2c -x8 -c"
+    else
+        command="wget"
+    fi
     echo "Downloading latest Origin setup file:"
-    wget "https://download.dm.origin.com/origin/live/OriginSetup.exe"
+    
+    if $command "https://download.dm.origin.com/origin/live/OriginSetup.exe"; then
     echo "Extracting the installation file:"
-    unzip OriginSetup.exe 'update/*.zip'
-    unzip -o ./update/*.zip -d "$DIR"
-    echo "Cleaning up..."
-    rm -r ./update
-    rm OriginSetup.exe
-    echo "Done!"
+        unzip OriginSetup.exe 'update/*.zip'
+        unzip -o ./update/*.zip -d "$DIR"
+        echo "Cleaning up..."
+        rm -r ./update
+        rm OriginSetup.exe
+        echo "Done!"
+    fi
 }
 
 if [[ ! -z "$WINEPREFIX" ]];
